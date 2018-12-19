@@ -26,13 +26,52 @@
 
   class Capture {
 
-   createCaptureURI() {
-     var protocol = "capture";
-     var template = (this.selection_text != "" ? this.selectedTemplate : this.unselectedTemplate);
-     if (this.useNewStyleLinks)
-       return "org-protocol://"+protocol+"?template="+template+'&url='+this.encoded_url+'&title='+this.escaped_title+'&body='+this.selection_text;
-     else
-       return "org-protocol://"+protocol+":/"+template+'/'+this.encoded_url+'/'+this.escaped_title+'/'+this.selection_text;
+    createCaptureURI() {
+      var protocol = "capture-html";
+      var template = (this.selection_text != "" ? this.selectedTemplate : this.unselectedTemplate);
+
+      var body = encodeURIComponent(function() {
+	var html = "";
+	if (typeof document.getSelection != "undefined") {
+          var sel = document.getSelection();
+          if (sel.rangeCount) {
+            var container = document.createElement("div");
+            for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+              container.appendChild(sel.getRangeAt(i).cloneContents());
+            }
+            html = container.innerHTML;
+          }
+	} else if (typeof document.selection != "undefined") {
+          if (document.selection.type == "Text") {
+            html = document.selection.createRange().htmlText;
+          }
+	}
+	var relToAbs = function(href) {
+          var a = document.createElement("a");
+          a.href = href;
+          var abs = a.protocol + "//" + a.host + a.pathname + a.search + a.hash;
+          a.remove();
+          return abs;
+	};
+	var elementTypes = [
+          ['a', 'href'],
+          ['img', 'src']
+	];
+	var div = document.createElement('div');
+	div.innerHTML = html;
+	elementTypes.map(function(elementType) {
+          var elements = div.getElementsByTagName(elementType[0]);
+          for (var i = 0; i < elements.length; i++) {
+            elements[i].setAttribute(elementType[1], relToAbs(elements[i].getAttribute(elementType[1])));
+          }
+	});
+	return div.innerHTML;
+      }())
+
+      if (this.useNewStyleLinks)
+	return "org-protocol://"+protocol+"?template="+template+'&url='+this.encoded_url+'&title='+this.escaped_title+'&body='+ body;
+      else
+	return "org-protocol://"+protocol+":/"+template+'/'+this.encoded_url+'/'+this.escaped_title+'/'+this.selection_text;
     }
 
     constructor() {
@@ -135,7 +174,7 @@
     transform: translate(-50%,-50%);
     -ms-transform: translate(-50%,-50%);
 }`;
-        document.body.appendChild(css);
+      document.body.appendChild(css);
     }
 
     function on() {

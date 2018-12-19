@@ -25,8 +25,8 @@ chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason == "install")
     chrome.storage.sync.set(
       {
-        selectedTemplate: 'p',
-        unselectedTemplate: 'L',
+        selectedTemplate: 'w',
+        unselectedTemplate: 'b',
         useNewStyleLinks: true,
         debug: false,
         overlay: true
@@ -34,8 +34,8 @@ chrome.runtime.onInstalled.addListener(function (details) {
   else if ((details.reason == "update" && details.previousVersion.startsWith("0.1")))
     chrome.storage.sync.set(
       {
-        selectedTemplate: 'p',
-        unselectedTemplate: 'L',
+        selectedTemplate: 'w',
+        unselectedTemplate: 'b',
         useNewStyleLinks: false,
         debug: false,
         overlay: true

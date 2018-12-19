@@ -2,6 +2,11 @@
   "manifest_version": 2,
   "name": "Org Capture",
   "version": "0.2.1",
+  "applications": {
+    "gecko": {
+      "id": "mycoolextension@mycoolextension.com" 
+    }
+  },
   "description": "A helper for capturing things via org-protocol in emacs: First, set up: http://orgmode.org/worg/org-contrib/org-protocol.html",
   "homepage_url": "https://github.com/sprig/org-capture-extension",
 
@@ -10,7 +15,7 @@
     "scripts": ["background.js"]
   },
 
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["activeTab", "storage", "bookmarks"],
 
   "options_ui": {
     "page": "options.html"
